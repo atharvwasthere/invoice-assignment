@@ -1,0 +1,15 @@
+{
+  "name": "invoice-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Powerplay invoice management dashboard — full-stack take-home",
+  "scripts": {
+    "dev:api": "pnpm --filter @invoice/backend dev",
+    "build": "pnpm -r build",
+    "seed": "pnpm --filter @invoice/backend seed",
+    "test": "pnpm -r test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,17 @@
+# Dependencies & build output
+node_modules/
+dist/
+
+# Env & local files
+.env
+*.log
+.DS_Store
+
+# Local tooling (not part of the deliverable)
+.claude/
+.rtk/
+
+# Publish only README.md among markdown files
+# (excludes CLAUDE.md, note.md, "things to do.md", etc.)
+*.md
+!README.md
