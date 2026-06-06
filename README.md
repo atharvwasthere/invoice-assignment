@@ -4,6 +4,16 @@ A full-stack invoice management dashboard: a paginated, sortable, filterable inv
 with create/edit forms, a customer profile view, and a summary/analytics view — backed by a
 performant API over a seeded dataset of **2,000 invoices across 61 customers**.
 
+## Screenshots
+
+| Invoice list (sort · filter · paginate) | Create / edit invoice |
+|---|---|
+| ![Invoice list dashboard](screenshots/invoice-list.png) | ![Create or edit invoice modal](screenshots/invoice-form.png) |
+
+| Customer profile (metrics · history) | Summary / analytics |
+|---|---|
+| ![Customer profile](screenshots/customer-profile.png) | ![Summary analytics](screenshots/summary.png) |
+
 ## Tech Stack
 
 | Layer | Choice |
@@ -232,8 +242,6 @@ Invoice edits are **partial modifications**, so the update endpoint is `PATCH`:
 
 The verb reflects the **endpoint contract** (a partial change-set is accepted), not the
 habits of any one client.
-
-_Full endpoint list — (TODO)_
 
 ## Testing
 
