@@ -87,6 +87,20 @@ populated immediately — no manual seed step. To force a re-seed (idempotent):
 docker compose run --rm api pnpm --filter @invoice/backend seed
 ```
 
+### Run without cloning (prebuilt images)
+
+Prebuilt images are published on Docker Hub, so the whole stack can run from a single
+compose file with no source checkout or build:
+
+```bash
+docker compose -f docker-compose.images.yml up
+```
+
+- Backend: [`atharv19/invoice-backend`](https://hub.docker.com/r/atharv19/invoice-backend)
+- Frontend: [`atharv19/invoice-frontend`](https://hub.docker.com/r/atharv19/invoice-frontend)
+
+Built for `linux/amd64`; Apple Silicon runs them under Docker Desktop's emulation.
+
 ## Running the Seed Script
 
 ```bash

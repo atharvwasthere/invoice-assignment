@@ -1,0 +1,52 @@
+# Pull-only stack — runs prebuilt images from Docker Hub, no source checkout or build.
+# For reviewers who just want to see it run:
+#
+#   docker compose -f docker-compose.images.yml up
+#
+# Frontend on http://localhost:8080, API on :5050. Mongo is pulled fresh and the API
+# seeds itself on first boot (seed-data.json is baked into the image), so the dashboard
+# is populated with no manual step.
+#
+# Images: https://hub.docker.com/r/atharv19/invoice-backend
+#         https://hub.docker.com/r/atharv19/invoice-frontend
+# (Built linux/amd64; Apple Silicon runs them under Docker Desktop emulation.)
+services:
+  mongo:
+    image: mongo:7
+    container_name: invoice-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  api:
+    image: atharv19/invoice-backend:latest
+    container_name: invoice-api
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/invoice_platform
+      PORT: "5050"
+    ports:
+      - "5050:5050"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  frontend:
+    image: atharv19/invoice-frontend:latest
+    container_name: invoice-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:
