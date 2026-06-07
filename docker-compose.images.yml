@@ -7,9 +7,9 @@
 # seeds itself on first boot (seed-data.json is baked into the image), so the dashboard
 # is populated with no manual step.
 #
-# Images: https://hub.docker.com/r/atharv19/invoice-backend
+# Images: https://hub.docker.com/r/atharv19/invoice-api
 #         https://hub.docker.com/r/atharv19/invoice-frontend
-# (Built linux/amd64; Apple Silicon runs them under Docker Desktop emulation.)
+# (Built multi-arch: linux/amd64 + linux/arm64 — run natively on Intel and ARM.)
 services:
   mongo:
     image: mongo:7
@@ -27,7 +27,7 @@ services:
       start_period: 20s
 
   api:
-    image: atharv19/invoice-backend:latest
+    image: atharv19/invoice-api:latest
     container_name: invoice-api
     restart: unless-stopped
     environment:

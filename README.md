@@ -96,10 +96,11 @@ compose file with no source checkout or build:
 docker compose -f docker-compose.images.yml up
 ```
 
-- Backend: [`atharv19/invoice-backend`](https://hub.docker.com/r/atharv19/invoice-backend)
+- Backend: [`atharv19/invoice-api`](https://hub.docker.com/r/atharv19/invoice-api)
 - Frontend: [`atharv19/invoice-frontend`](https://hub.docker.com/r/atharv19/invoice-frontend)
 
-Built for `linux/amd64`; Apple Silicon runs them under Docker Desktop's emulation.
+Both images are multi-arch (`linux/amd64` + `linux/arm64`), so they run natively on Intel
+and Apple Silicon / ARM machines.
 
 ## Running the Seed Script
 
