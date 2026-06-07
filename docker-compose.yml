@@ -2,7 +2,10 @@
 #
 #   docker compose up --build         # full stack: frontend :8080, API :5050, mongo :27017
 #   docker compose up -d mongo        # just Mongo (for local dev against pnpm dev servers)
-#   docker compose run --rm api pnpm --filter @invoice/backend seed   # seed the DB once
+#
+# The API seeds itself on first boot when the DB is empty, so no manual seed step is
+# needed. To force a re-seed (idempotent), run:
+#   docker compose run --rm api pnpm --filter @invoice/backend seed
 services:
   mongo:
     image: mongo:7

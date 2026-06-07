@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, resolve } from "node:path";
 import { Types } from "mongoose";
 import type { InvoiceStatus } from "@invoice/shared";
@@ -37,9 +37,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // apps/backend/src/seed -> repo root
 const SEED_FILE = resolve(__dirname, "../../../../seed-data.json");
 
-async function seed(): Promise<void> {
-  await connectDb();
-
+/**
+ * Performs the actual seeding. Assumes a live Mongo connection — connection
+ * lifecycle is the caller's job, so this can run either standalone (the CLI
+ * wrapper below) or in-process at server startup (seedIfEmpty).
+ */
+export async function runSeed(): Promise<void> {
   const raw = await readFile(SEED_FILE, "utf-8");
   const records: SeedRecord[] = JSON.parse(raw);
   console.log(`[seed] read ${records.length} records from ${SEED_FILE}`);
@@ -107,11 +110,34 @@ async function seed(): Promise<void> {
     `[seed] invoices — inserted ${result.upsertedCount}, updated ${result.modifiedCount}, total ${records.length}`,
   );
 
-  await disconnectDb();
-  console.log("[seed] done");
 }
 
-seed().catch((err) => {
-  console.error("[seed] failed", err);
-  process.exit(1);
-});
+/**
+ * Seeds only when the invoices collection is empty. Called on server startup so a
+ * fresh `docker compose up` lands a populated dashboard with no manual step. The
+ * count guard makes it a no-op on every subsequent boot (and the seed itself is
+ * idempotent, so even a race would be harmless).
+ */
+export async function seedIfEmpty(): Promise<void> {
+  const count = await Invoice.estimatedDocumentCount();
+  if (count > 0) {
+    console.log(`[seed] skipped — ${count} invoices already present`);
+    return;
+  }
+  console.log("[seed] empty database detected — seeding initial data");
+  await runSeed();
+}
+
+// Standalone CLI: `tsx src/seed/seed.ts` (manages its own connection lifecycle).
+// Guarded so importing this module for seedIfEmpty does NOT trigger a run.
+const isDirectRun = import.meta.url === pathToFileURL(process.argv[1] ?? "").href;
+if (isDirectRun) {
+  connectDb()
+    .then(runSeed)
+    .then(disconnectDb)
+    .then(() => console.log("[seed] done"))
+    .catch((err) => {
+      console.error("[seed] failed", err);
+      process.exit(1);
+    });
+}

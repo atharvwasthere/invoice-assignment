@@ -78,7 +78,13 @@ Bring up Mongo + API + Frontend together:
 
 ```bash
 docker compose up --build           # frontend on http://localhost:8080, API on :5050
-docker compose run --rm api pnpm --filter @invoice/backend seed   # seed once
+```
+
+The API **seeds itself on first boot when the database is empty**, so the dashboard is
+populated immediately — no manual seed step. To force a re-seed (idempotent):
+
+```bash
+docker compose run --rm api pnpm --filter @invoice/backend seed
 ```
 
 ## Running the Seed Script
